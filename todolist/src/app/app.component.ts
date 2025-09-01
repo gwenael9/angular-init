@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HeaderComponent } from './shared/components/header/header.component';
+import { HeaderComponent } from './shared/components/header/header';
 import { TodoListComponent } from './features/todos/components/todo-list.component';
 
 @Component({
