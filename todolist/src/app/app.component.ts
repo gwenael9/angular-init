@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from './shared/components/header/header';
-import { TodoListComponent } from './features/todos/components/todo-list.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, TodoListComponent],
+  imports: [HeaderComponent, RouterOutlet],
   template: `
     <app-header></app-header>
     <main class="container mx-auto p-4">
-      <app-todo-list></app-todo-list>
+      <router-outlet></router-outlet>
     </main>
   `,
   styles: [],
