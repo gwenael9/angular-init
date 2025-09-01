@@ -1,42 +1,12 @@
 import { Injectable, signal } from '@angular/core';
 import { Todo, CreateTodoRequest } from '../models/todo.model';
+import { mockTodos } from 'src/app/infrastructure/mock-data/todo';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
-  private todos = signal<Todo[]>([
-    {
-      id: 1,
-      title: 'Apprendre Angular',
-      description: "Étudier les fondamentaux d'Angular 20+",
-      status: 'todo',
-      priority: 'high',
-      createdBy: 1,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-01-15'),
-    },
-    {
-      id: 2,
-      title: 'Créer un projet',
-      description: 'Développer une application TodoList',
-      status: 'in-progress',
-      priority: 'medium',
-      createdBy: 1,
-      createdAt: new Date('2024-01-14'),
-      updatedAt: new Date('2024-01-16'),
-    },
-    {
-      id: 3,
-      title: "Configurer l'environnement",
-      description: 'Installer Node.js, Angular CLI et configurer VS Code',
-      status: 'done',
-      priority: 'high',
-      createdBy: 1,
-      createdAt: new Date('2024-01-13'),
-      updatedAt: new Date('2024-01-14'),
-    },
-  ]);
+  private todos = signal<Todo[]>(mockTodos);
 
   // Simuler un délai réseau
   private delay(ms: number): Promise<void> {
