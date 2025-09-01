@@ -45,24 +45,19 @@ export class TodoService {
 
   // GET - Récupérer tous les todos
   async getAllTodos(): Promise<Todo[]> {
-    console.log('🔄 Service: Récupération de tous les todos...');
     await this.delay(300); // Simuler un appel API
-    console.log('✅ Service: Todos récupérés avec succès');
     return this.todos();
   }
 
   // GET - Récupérer un todo par ID
   async getTodoById(id: number): Promise<Todo | undefined> {
-    console.log(`🔄 Service: Récupération du todo ${id}...`);
     await this.delay(200);
     const todo = this.todos().find((t) => t.id === id);
-    console.log(`✅ Service: Todo ${id} récupéré:`, todo);
     return todo;
   }
 
   // POST - Créer un nouveau todo
   async createTodo(todoData: CreateTodoRequest): Promise<Todo> {
-    console.log("🔄 Service: Création d'un nouveau todo...", todoData);
     await this.delay(400);
 
     const newTodo: Todo = {
@@ -78,13 +73,11 @@ export class TodoService {
     };
 
     this.todos.update((todos) => [...todos, newTodo]);
-    console.log('✅ Service: Todo créé avec succès:', newTodo);
     return newTodo;
   }
 
   // PUT - Mettre à jour un todo
   async updateTodo(id: number, updates: Partial<Todo>): Promise<Todo | undefined> {
-    console.log(`🔄 Service: Mise à jour du todo ${id}...`, updates);
     await this.delay(300);
 
     let updatedTodo: Todo | undefined;
@@ -102,13 +95,11 @@ export class TodoService {
       })
     );
 
-    console.log(`✅ Service: Todo ${id} mis à jour:`, updatedTodo);
     return updatedTodo;
   }
 
   // DELETE - Supprimer un todo
   async deleteTodo(id: number): Promise<boolean> {
-    console.log(`🔄 Service: Suppression du todo ${id}...`);
     await this.delay(250);
 
     let deleted = false;
@@ -119,7 +110,6 @@ export class TodoService {
       return filtered;
     });
 
-    console.log(`✅ Service: Todo ${id} supprimé:`, deleted);
     return deleted;
   }
 

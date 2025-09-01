@@ -23,6 +23,5 @@ import { Component } from '@angular/core';
 export class HeaderComponent {
   logout() {
     // TODO: Implémenter la déconnexion
-    console.log('Logout clicked');
   }
 }
