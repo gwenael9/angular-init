@@ -40,7 +40,7 @@ export class HeaderComponent {
   }
 
   logout() {
-    console.log('testtt');
+    // console.log('testttttttt');
     this.authService.logout();
     this.router.navigate(['/auth/login']);
   }
