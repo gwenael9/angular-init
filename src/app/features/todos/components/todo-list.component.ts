@@ -1,14 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoService } from '../services/todo.service';
 import { StatistiquesComponent } from './statistique.component';
 import { TodoCardComponent } from './todo-card.component';
 import { TodoFormComponent } from './todo-form.component';
+import { Todo } from '../models/todo.model';
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
   imports: [CommonModule, StatistiquesComponent, TodoCardComponent, TodoFormComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-todo-form></app-todo-form>
     <app-statistiques></app-statistiques>
@@ -21,7 +23,7 @@ import { TodoFormComponent } from './todo-form.component';
           <span class="text-sm text-gray-500">({{ todoService.pendingTodos().length }})</span>
         </h3>
         <div class="space-x-3">
-          @for (todo of todoService.pendingTodos(); track todo.id) {
+          @for (todo of todoService.pendingTodos(); track trackByTodoId(todo)) {
             <app-todo-card [todo]="todo"></app-todo-card>
           }
         </div>
@@ -34,7 +36,7 @@ import { TodoFormComponent } from './todo-form.component';
           <span class="text-sm text-gray-500">({{ todoService.inProgressTodos().length }})</span>
         </h3>
         <div class="space-y-3">
-          @for (todo of todoService.inProgressTodos(); track todo.id) {
+          @for (todo of todoService.inProgressTodos(); track trackByTodoId(todo)) {
             <app-todo-card [todo]="todo"></app-todo-card>
           }
         </div>
@@ -47,7 +49,7 @@ import { TodoFormComponent } from './todo-form.component';
           <span class="text-sm text-gray-500">({{ todoService.completedTodos().length }})</span>
         </h3>
         <div class="space-y-3">
-          @for (todo of todoService.completedTodos(); track todo.id) {
+          @for (todo of todoService.completedTodos(); track trackByTodoId(todo)) {
             <app-todo-card [todo]="todo"></app-todo-card>
           }
         </div>
@@ -57,4 +59,8 @@ import { TodoFormComponent } from './todo-form.component';
 })
 export class TodoListComponent {
   todoService = inject(TodoService);
+
+  trackByTodoId(todo: Todo): number {
+    return todo.id;
+  }
 }
