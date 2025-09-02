@@ -13,14 +13,14 @@ import { AuthService } from 'src/app/features/auth/services/auth';
         <nav>
           <ul class="flex space-x-4">
             @if (currentUser()) {
-            <li><a routerLink="/todos" class="hover:text-blue-200">Todos</a></li>
-            @if (currentUser()?.role === 'admin') {
-            <li><a routerLink="/admin" class="hover:text-blue-200">Admin</a></li>
-            }
-            <li><button (click)="logout()" class="hover:text-blue-200">Logout</button></li>
+              <li><a routerLink="/todos" class="hover:text-blue-200">Todos</a></li>
+              @if (currentUser()?.role === 'admin') {
+                <li><a routerLink="/admin" class="hover:text-blue-200">Admin</a></li>
+              }
+              <li><button (click)="logout()" class="hover:text-blue-200">Logout</button></li>
             } @else {
-            <li><a routerLink="/auth/login" class="hover:text-blue-200">Login</a></li>
-            <li><a routerLink="/auth/register" class="hover:text-blue-200">Register</a></li>
+              <li><a routerLink="/auth/login" class="hover:text-blue-200">Login</a></li>
+              <li><a routerLink="/auth/register" class="hover:text-blue-200">Register</a></li>
             }
           </ul>
         </nav>
@@ -40,6 +40,7 @@ export class HeaderComponent {
   }
 
   logout() {
+    console.log('test');
     this.authService.logout();
     this.router.navigate(['/auth/login']);
   }
