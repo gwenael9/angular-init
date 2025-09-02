@@ -20,9 +20,11 @@ export class AuthService {
 
   constructor() {
     // Vérifier s'il y a un utilisateur en session
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      this.currentUser.set(JSON.parse(savedUser));
+    const token = localStorage.getItem('token');
+    if (token) {
+      // this.currentUser.set(JSON.parse(token));
+      const user = this.decodeToken(token);
+      this.currentUser.set(user);
     }
   }
 
@@ -31,7 +33,10 @@ export class AuthService {
     const password = this.passwords[credentials.email];
 
     if (user && password === credentials.password) {
-      this.setCurrentUser(user);
+      const token = this.generateMockJwt(user);
+      localStorage.setItem('token', token);
+      // this.setCurrentUser(user);
+      this.currentUser.set(user);
       // Simuler un délai réseau
       return of(user).pipe(delay(500));
     } else {
@@ -66,7 +71,7 @@ export class AuthService {
 
   logout(): void {
     this.currentUser.set(null);
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
   }
 
   getCurrentUser(): User | null {
@@ -87,13 +92,34 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    const user = this.currentUser();
-    return user ? `mock-token-${user.id}` : null;
+    return localStorage.getItem('token');
   }
 
-  // Méthode pour définir l'utilisateur connecté (utilisée après login)
-  setCurrentUser(user: User): void {
-    this.currentUser.set(user);
-    localStorage.setItem('currentUser', JSON.stringify(user));
+  // Méthode pour simuler la génération d'un JWT (payload encodé en base64)
+  private generateMockJwt(user: User): string {
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(
+      JSON.stringify({ id: user.id, email: user.email, name: user.name, role: user.role }),
+    );
+    const signature = btoa('mock-signature');
+    return `${header}.${payload}.${signature}`;
+  }
+
+  // Méthode pour décoder le token JWT simulé
+  private decodeToken(token: string): User | null {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return {
+        id: decoded.id,
+        name: decoded.name,
+        email: decoded.email,
+        role: decoded.role,
+        password: '',
+        createdAt: new Date(),
+      };
+    } catch {
+      return null;
+    }
   }
 }
