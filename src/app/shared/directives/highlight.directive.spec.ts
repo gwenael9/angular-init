@@ -1,8 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { HighlightDirective } from './highlight.directive';
 import { Component } from '@angular/core';
 
 @Component({
+  standalone: true,
+  imports: [HighlightDirective],
   template: '<div [appHighlight]="color" [appHighlightDelay]="delay">Test</div>',
 })
 class TestComponent {
@@ -16,18 +18,21 @@ describe('HighlightDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HighlightDirective, TestComponent],
+      imports: [TestComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
   });
 
-  it('should apply highlight color', () => {
+  it('should apply highlight color', fakeAsync(() => {
     component.color = 'red';
+    fixture.detectChanges();
+
+    tick();
     fixture.detectChanges();
 
     const element = fixture.nativeElement.querySelector('div');
     expect(element.style.backgroundColor).toBe('red');
-  });
+  }));
 });
