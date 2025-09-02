@@ -1,7 +1,7 @@
 export interface Todo {
   id: number;
   title: string;
-  description: string;
+  description?: string;
   status: 'todo' | 'in-progress' | 'done';
   priority: 'low' | 'medium' | 'high';
   assignedTo?: number; // ID de l'utilisateur assigné

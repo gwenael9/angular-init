@@ -5,11 +5,13 @@ import { TodoService } from '../../todos/services/todo.service';
 import { AuthService } from '../../auth/services/auth';
 import { User } from '../../auth/models/user.model';
 import { Todo } from '../../todos/models/todo.model';
+import { PriorityPipe } from '../../../shared/pipes/priority.pipe';
+import { HighlightDirective } from '../../../shared/directives/highlight.directive';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PriorityPipe, HighlightDirective],
   template: `
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-8">
@@ -165,7 +167,12 @@ import { Todo } from '../../todos/models/todo.model';
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     @for (todo of todos(); track todo.id) {
-                      <tr>
+                      <tr
+                        [appHighlight]="
+                          todo.priority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'transparent'
+                        "
+                        [appHighlightDelay]="todo.priority === 'high' ? 500 : 0"
+                      >
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm font-medium text-gray-900">{{ todo.title }}</div>
                           @if (todo.description) {
@@ -195,7 +202,7 @@ import { Todo } from '../../todos/models/todo.model';
                             [class.text-green-800]="todo.priority === 'low'"
                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                           >
-                            {{ todo.priority | titlecase }}
+                            {{ todo.priority | priority }}
                           </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

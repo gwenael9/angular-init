@@ -1,12 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Todo, CreateTodoRequest } from '../models/todo.model';
 import { mockTodos } from 'src/app/infrastructure/mock-data/todo';
+import { AuthService } from '../../auth/services/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
   private todos = signal<Todo[]>(mockTodos);
+
+  private authService = inject(AuthService);
 
   // Simuler un délai réseau
   private delay(ms: number): Promise<void> {
@@ -30,14 +33,17 @@ export class TodoService {
   async createTodo(todoData: CreateTodoRequest): Promise<Todo> {
     await this.delay(400);
 
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.id) throw new Error('Utilisateur non connecté');
+
     const newTodo: Todo = {
       id: Date.now(),
       title: todoData.title,
-      description: todoData.description || '',
+      description: todoData.description,
       status: 'todo',
       priority: todoData.priority,
       assignedTo: todoData.assignedTo,
-      createdBy: 1, // TODO: Récupérer l'ID de l'utilisateur connecté
+      createdBy: currentUser?.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -62,7 +68,7 @@ export class TodoService {
           return updatedTodo;
         }
         return todo;
-      })
+      }),
     );
 
     return updatedTodo;
@@ -83,12 +89,26 @@ export class TodoService {
     return deleted;
   }
 
-  // Méthodes utilitaires
-  getTodosByStatus(status: Todo['status']): Todo[] {
-    return this.todos().filter((todo) => todo.status === status);
-  }
+  // Signal computed - se recalcule automatiquement
+  public completedTodos = computed(() => this.todos().filter((todo) => todo.status === 'done'));
 
-  getTodosByPriority(priority: Todo['priority']): Todo[] {
-    return this.todos().filter((todo) => todo.priority === priority);
-  }
+  public pendingTodos = computed(() => this.todos().filter((todo) => todo.status === 'todo'));
+
+  public inProgressTodos = computed(() =>
+    this.todos().filter((todo) => todo.status === 'in-progress'),
+  );
+
+  public highPriorityTodos = computed(() =>
+    this.todos().filter((todo) => todo.priority === 'high'),
+  );
+
+  public todoStats = computed(() => ({
+    total: this.todos().length,
+    completed: this.completedTodos().length,
+    inProgress: this.inProgressTodos().length,
+    pending: this.pendingTodos().length,
+    highPriority: this.highPriorityTodos().length,
+    completionRate:
+      this.todos().length > 0 ? (this.completedTodos().length / this.todos().length) * 100 : 0,
+  }));
 }
