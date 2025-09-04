@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from 'src/app/features/auth/services/auth';
+import { PwaPromptComponent } from '../pwa-prompt/pwa-prompt.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, PwaPromptComponent],
   template: `
     <header class="bg-blue-600 text-white p-4">
       <div class="container mx-auto flex justify-between items-center">
@@ -24,6 +25,7 @@ import { AuthService } from 'src/app/features/auth/services/auth';
             }
           </ul>
         </nav>
+        <app-pwa-prompt></app-pwa-prompt>
       </div>
     </header>
   `,
