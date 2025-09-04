@@ -7,18 +7,23 @@ import { Observable, of, throwError, delay } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private users: User[] = mockUsers;
+  private defaultUsers: User[] = mockUsers;
 
   private currentUser = signal<User | null>(null);
   public currentUser$ = this.currentUser.asReadonly();
 
   // Mock data - mots de passe (en réalité, ils seraient hashés)
-  private passwords: Record<string, string> = {
+  private defaultPasswords: Record<string, string> = {
     'admin@example.com': 'admin123',
     'user@example.com': 'user123',
   };
 
+  private users: User[] = [];
+  private passwords: Record<string, string> = {};
+
   constructor() {
+    this.loadUsersFromLocalStorage();
+
     // Vérifier s'il y a un utilisateur en session
     const token = localStorage.getItem('token');
     if (token) {
@@ -35,7 +40,6 @@ export class AuthService {
     if (user && password === credentials.password) {
       const token = this.generateMockJwt(user);
       localStorage.setItem('token', token);
-      // this.setCurrentUser(user);
       this.currentUser.set(user);
       // Simuler un délai réseau
       return of(user).pipe(delay(500));
@@ -65,6 +69,8 @@ export class AuthService {
     this.users.push(newUser);
     this.passwords[userData.email] = userData.password;
 
+    this.saveUserToLocalStorage();
+
     // Simuler un délai réseau
     return of(newUser).pipe(delay(500));
   }
@@ -72,6 +78,7 @@ export class AuthService {
   logout(): void {
     this.currentUser.set(null);
     localStorage.removeItem('token');
+    this.clearUserFromLocalStorage();
   }
 
   getCurrentUser(): User | null {
@@ -86,6 +93,7 @@ export class AuthService {
     const index = this.users.findIndex((u) => u.id === userId);
     if (index !== -1) {
       this.users.splice(index, 1);
+      this.saveUserToLocalStorage();
       return of(void 0).pipe(delay(300));
     }
     return throwError(() => new Error('Utilisateur non trouvé'));
@@ -121,5 +129,29 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  private saveUserToLocalStorage(): void {
+    localStorage.setItem('allUsers', JSON.stringify(this.users));
+    localStorage.setItem('usersPassword', JSON.stringify(this.passwords));
+  }
+
+  private loadUsersFromLocalStorage(): void {
+    const allUsers = localStorage.getItem('allUsers');
+    const usersPassword = localStorage.getItem('usersPassword');
+
+    if (allUsers && usersPassword) {
+      this.users = JSON.parse(allUsers);
+      this.passwords = JSON.parse(usersPassword);
+    } else {
+      this.users = [...this.defaultUsers];
+      this.passwords = { ...this.defaultPasswords };
+    }
+  }
+
+  private clearUserFromLocalStorage(): void {
+    localStorage.removeItem('allUsers');
+    localStorage.removeItem('usersPassword');
+    this.loadUsersFromLocalStorage();
   }
 }
